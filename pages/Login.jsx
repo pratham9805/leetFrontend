@@ -4,6 +4,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useState } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import { useEffect } from "react";
+import { loginUser } from "../src/authSlice";
 
 const LoginSchema = z.object({
  
@@ -12,6 +16,18 @@ const LoginSchema = z.object({
 });
 
 function Login() {
+
+    const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const {isAuthenticated,loading ,error} =useSelector((state)=>state.auth)
+
+  useEffect(()=>{
+    if(isAuthenticated){
+      navigate('/');
+    }
+  },[isAuthenticated,navigate])
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(LoginSchema)
@@ -20,7 +36,7 @@ function Login() {
   const onSubmit = (data) => {
     setIsSubmitting(true);
     setTimeout(() => {
-      console.log(data);
+     dispatch(loginUser(data))
       setIsSubmitting(false);
     }, 1500);
   };
