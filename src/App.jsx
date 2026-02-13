@@ -7,12 +7,19 @@ import {useDispatch,useSelector} from "react-redux"
 import { useEffect } from "react";
 function App(){
 
-  const {isAuthenticated} = useSelector((state)=>state.auth)
+  const {isAuthenticated,loading} = useSelector((state)=>state.auth)
   const dispatch = useDispatch();
 
   useEffect(()=>{
     dispatch(checkAuth())
   },[])
+  if(loading){
+    return(
+      <div className="flex min-h-screen items-center justify-center">
+          <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    )
+  }
   return(<>
   <Routes>
     <Route path="/" element={isAuthenticated?<Homepage></Homepage>:<Navigate to={"/signup"}/>}></Route>

@@ -5,9 +5,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router";
+import { useNavigate,NavLink } from "react-router";
 import { useEffect } from "react";
 import { loginUser } from "../src/authSlice";
+import { Eye, EyeOff } from "lucide-react";
 
 const LoginSchema = z.object({
  
@@ -19,7 +20,7 @@ function Login() {
 
     const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const [showPassword, setShowPassword] = useState(false);
   const {isAuthenticated,loading ,error} =useSelector((state)=>state.auth)
 
   useEffect(()=>{
@@ -28,17 +29,14 @@ function Login() {
     }
   },[isAuthenticated,navigate])
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(LoginSchema)
   });
 
   const onSubmit = (data) => {
-    setIsSubmitting(true);
-    setTimeout(() => {
+   
      dispatch(loginUser(data))
-      setIsSubmitting(false);
-    }, 1500);
+
   };
 
   return (
@@ -115,10 +113,19 @@ function Login() {
             <div className="relative">
               <input
                 {...register('password')}
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 className="w-full px-4 sm:px-5 py-2 sm:py-3 text-sm sm:text-base rounded-lg bg-slate-800/50 border border-slate-700/50 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 backdrop-blur-sm transition-all duration-200 hover:border-slate-600/50"
               />
+                {/* Eye Icon */}
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+
               {errors.password && (
                 <p className="mt-2 text-xs sm:text-sm text-red-400 flex items-center gap-2">
                   <span className="w-1 h-1 rounded-full bg-red-400 shrink-0"></span>
@@ -130,24 +137,24 @@ function Login() {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={loading}
               className="w-full py-2 sm:py-3 px-4 sm:px-5 mt-6 sm:mt-8 rounded-lg bg-linear-to-r from-blue-500 to-purple-600 text-white text-sm sm:text-base font-semibold shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 hover:from-blue-600 hover:to-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {isSubmitting && (
+              {loading && (
                 <svg className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
               )}
-              {isSubmitting ? 'Logging In...' : 'Login'}
+              {loading ? 'Logging In...' : 'Login'}
             </button>
 
             {/* Sign In Link */}
             <p className="text-center text-slate-400 text-xs sm:text-sm">
               Don't have an Account?{' '}
-              <a href="#" className="text-blue-400 hover:text-blue-300 font-semibold transition-colors">
-                Sign Up
-              </a>
+             <NavLink to="/signup" className="text-blue-400 hover:text-blue-300 font-semibold transition-colors">
+                Sign up
+              </NavLink>
             </p>
           </form>
 
