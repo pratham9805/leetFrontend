@@ -114,7 +114,6 @@ function Homepage() {
                   Logout
                 </button>
               </li>
-
               {user?.role === "admin" && (
                 <li>
                   <NavLink to="/admin" className="gap-2">
