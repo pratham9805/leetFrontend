@@ -6,6 +6,7 @@ import { checkAuth } from "./authSlice";
 import {useDispatch,useSelector} from "react-redux"
 import { useEffect } from "react";
 import AdminPanel from "../pages/AdminPanel";
+import ProblemPage from "../pages/ProblemPage";
 function App(){
 
   const {isAuthenticated,loading,user} = useSelector((state)=>state.auth)
@@ -27,6 +28,7 @@ function App(){
     <Route path="/login" element={isAuthenticated?<Navigate to={'/'}/>:<Login></Login>}></Route>
     <Route path="/signup" element={isAuthenticated?<Navigate to={'/'}/>:<Signup></Signup>}></Route>
     <Route path="/admin" element={isAuthenticated&&user?.role=='admin'?<AdminPanel/>:<Navigate to={'/'}/>}></Route>
+    <Route path="/problem/:problemId" element={<ProblemPage/>}></Route>
   </Routes>
   
   </>)
