@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import Editor from '@monaco-editor/react';
 import { useParams } from 'react-router';
 import axiosClient from "../src/utils/axiosClient"
+import SubmissionHistory from '../src/components/SubmissionHistory';
 
 
 const ProblemPage = () => {
@@ -71,7 +72,6 @@ const ProblemPage = () => {
     setCode(value || '');
   };
 
-  console.log(problem?.referenceSolution)
   const handleEditorDidMount = (editor) => {
     editorRef.current = editor;
   };
@@ -287,7 +287,7 @@ const ProblemPage = () => {
                     <h3 className="text-lg font-semibold text-gray-300">Solutions</h3>
                     {problem?.referencesolution && problem?.referencesolution.length > 0 ? (
                       <div className="space-y-4">
-                        {problem.referenceolution?.map((solution, index) => (
+                        {problem.referencesolution?.map((solution, index) => (
                           <div key={index} className="rounded-xl overflow-hidden border border-white/10 bg-white/3">
                             <div className="px-4 py-3 bg-indigo-600/20 border-b border-white/10">
                               <h4 className="font-semibold text-indigo-300 text-sm">{solution?.language}</h4>
@@ -307,7 +307,7 @@ const ProblemPage = () => {
                 {activeLeftTab === 'submissions' && (
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold text-gray-300">My Submissions</h3>
-                    <p className="text-gray-500 text-sm">Your submission history will appear here.</p>
+                    <SubmissionHistory problemId={problemId}/>
                   </div>
                 )}
               </>
