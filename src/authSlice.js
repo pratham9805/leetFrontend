@@ -21,7 +21,7 @@ export const loginUser = createAsyncThunk(
       const response = await axiosClient.post('/user/login', credentials);
       return response.data.user;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data||'Invalid Credentials');
     }
   }
 );
@@ -74,7 +74,7 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || 'Something went wrong';
+        state.error = action.payload || 'Something went wrong';
         state.isAuthenticated = false;
         state.user = null;
       })
@@ -91,7 +91,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || 'Something went wrong';
+        state.error = action.payload || 'Something went wrong';
         state.isAuthenticated = false;
         state.user = null;
       })
@@ -108,7 +108,7 @@ const authSlice = createSlice({
       })
       .addCase(checkAuth.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || 'Something went wrong';
+        state.error = null;
         state.isAuthenticated = false;
         state.user = null;
       })
