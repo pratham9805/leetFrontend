@@ -187,7 +187,7 @@ const ProblemPage = () => {
           <div className="flex items-center gap-4">
             {problem && (
               <>
-                <h2 className="text-xl font-bold bg-gradient-to-r from-blue-200 via-indigo-200 to-fuchsia-200 bg-clip-text text-transparent">
+                <h2 className="text-xl font-bold bg-linear-to-r from-blue-200 via-indigo-200 to-fuchsia-200 bg-clip-text text-transparent">
                   {problem.title}
                 </h2>
                 <div className={`px-3 py-0.5 rounded-full border text-xs font-medium uppercase tracking-wider ${getDifficultyColor(problem.difficulty)}`}>
