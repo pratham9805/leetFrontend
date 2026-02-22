@@ -46,7 +46,7 @@ const ProblemPage = () => {
           else if (sc.language === "javascript" && selectedLanguage === 'javascript') return true;
           return false;
         })?.initialcode || 'Hello';
-        console.log("Initial: "+ initialCode)
+      
 
         setProblem(response.data);
         setCode(initialCode);
