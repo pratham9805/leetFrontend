@@ -22,7 +22,7 @@ function Signup() {
   const navigate = useNavigate();
 
   const {isAuthenticated,loading ,error} =useSelector((state)=>state.auth)
- 
+ console.log(isAuthenticaded)
   const [showPassword, setShowPassword] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm({
