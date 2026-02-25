@@ -22,7 +22,7 @@ function ChatAi({problem}) {
         reset();
 
         try {
-            
+            console.log("helo")
             const response = await axiosClient.post("/ai/chat", {
                 messages:messages,
                 title:problem.title,
