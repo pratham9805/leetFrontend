@@ -15,7 +15,7 @@ function ChatAi({problem}) {
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
-    console.log("Heo")
+    
 
     const onSubmit = async (data) => {
         
