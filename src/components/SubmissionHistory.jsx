@@ -12,6 +12,7 @@ const SubmissionHistory = ({ problemId }) => {
       try {
         setLoading(true);
         const response = await axiosClient.get(`/problem/submittedProblem/${problemId}`);
+        console.log("submission history response:", response.data);
         setSubmissions(response.data);
         setError(null);
       } catch (err) {

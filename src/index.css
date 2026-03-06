@@ -1,2 +1,28 @@
 @import "tailwindcss";
 @plugin "daisyui";
+.markdown-body {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.markdown-body pre {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.markdown-body code {
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.markdown-body p {
+  margin-bottom: 8px;
+}
+
+.markdown-body ul {
+  padding-left: 20px;
+}

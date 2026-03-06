@@ -90,7 +90,7 @@ function Homepage() {
             className="btn btn-ghost text-xl gap-2 text-primary font-bold"
           >
             <Code2 className="w-6 h-6" />
-            LeetCode
+            CodeShastra
           </NavLink>
         </div>
 

@@ -17,7 +17,8 @@ function App(){
 
   useEffect(()=>{
     dispatch(checkAuth())
-  },[])
+  },[dispatch])
+  
   if(loading){
     return(
       <div className="flex min-h-screen items-center justify-center">

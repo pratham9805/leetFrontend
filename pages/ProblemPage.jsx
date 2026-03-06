@@ -23,7 +23,11 @@ import {
 const ProblemPage = () => {
   const [problem, setProblem] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState('javascript');
-  const [code, setCode] = useState('');
+  const [codeByLanguage, setCodeByLanguage] = useState({
+  javascript: '',
+  java: '',
+  cpp: ''
+});
   const [loading, setLoading] = useState(false);
   const [runResult, setRunResult] = useState(null);
   const [submitResult, setSubmitResult] = useState(null);
@@ -40,16 +44,24 @@ const ProblemPage = () => {
       try {
         const response = await axiosClient.get(`/problem/problemById/${problemId}`);
         
-        const initialCode = response.data?.startcode.find((sc) => {
-          if (sc.language === "c++" && selectedLanguage === 'cpp') return true;
-          else if (sc.language === "java" && selectedLanguage === 'java') return true;
-          else if (sc.language === "javascript" && selectedLanguage === 'javascript') return true;
-          return false;
-        })?.initialcode || 'Hello';
-     
+        const codes = {
+  javascript: '',
+  java: '',
+  cpp: ''
+};
+
+//for INITIAL CODE OF ALL LANGUAGES
+response.data.startcode.forEach(sc => {
+  if (sc.language === "javascript") codes.javascript = sc.initialcode;
+  if (sc.language === "java") codes.java = sc.initialcode;
+  if (sc.language === "c++") codes.cpp = sc.initialcode;
+});
+
+setCodeByLanguage(codes);
 
         setProblem(response.data);
-        setCode(initialCode);
+
+
         setLoading(false);
       } catch (error) {
         console.error('Error fetching problem:', error);
@@ -60,19 +72,14 @@ const ProblemPage = () => {
     fetchProblem();
   }, [problemId]);
 
-  // Update code when language changes
-  useEffect(() => {
-    if (problem) {
-      const initialCode = problem?.startcode?.find(sc => 
-        (sc.language === selectedLanguage) || (sc.language === "c++" && selectedLanguage === 'cpp')
-      )?.initialcode || '';
-      setCode(initialCode);
-    }
-  }, [selectedLanguage, problem]);
 
-  const handleEditorChange = (value) => {
-    setCode(value || '');
-  };
+
+ const handleEditorChange = (value) => {
+  setCodeByLanguage(prev => ({
+    ...prev,
+    [selectedLanguage]: value || ''
+  }));
+};
 
   const handleEditorDidMount = (editor) => {
     editorRef.current = editor;
@@ -87,7 +94,7 @@ const ProblemPage = () => {
     setRunResult(null);
     try {
       const response = await axiosClient.post(`/submission/run/${problemId}`, {
-        code,
+        code: codeByLanguage[selectedLanguage],
         language: selectedLanguage
       });
 
@@ -110,7 +117,7 @@ const ProblemPage = () => {
     setSubmitResult(null);
     try {
         const response = await axiosClient.post(`/submission/submit/${problemId}`, {
-        code:code,
+        code:codeByLanguage[selectedLanguage],
         language: selectedLanguage
       });
 
@@ -352,7 +359,7 @@ const ProblemPage = () => {
                 {activeLeftTab === 'ChatAI' && (
                   <div className="h-full flex flex-col animate-in fade-in duration-500">
                     <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-4"><Bot className="text-indigo-400" size={18}/> AI Assistant</h3>
-                      <div className="flex-1 bg-black/20 rounded-xl border border-white/5 overflow-hidden">
+                      <div className="flex-1 bg-black/20 rounded-xl border border-white/5 min-h-0">
                         <ChatAI problem={problem}></ChatAI>
                       </div>
                   </div>
@@ -414,7 +421,7 @@ const ProblemPage = () => {
                   <Editor
                     height="100%"
                     language={getLanguageForMonaco(selectedLanguage)}
-                    value={code}
+                    value={codeByLanguage[selectedLanguage]}
                     onChange={handleEditorChange}
                     onMount={handleEditorDidMount}
                     theme="vs-dark"
@@ -452,7 +459,7 @@ const ProblemPage = () => {
                     <div className="flex items-center gap-3 pb-3 border-b border-white/5">
                       {runResult.success ? <CheckCircle2 className="text-emerald-400" /> : <div className="text-red-400 text-xl">✕</div>}
                       <span className={`font-semibold text-lg ${runResult.success ? 'text-emerald-400' : 'text-red-400'}`}>
-                        {runResult.success ? 'All Test Cases Passed' : 'Execution Error'}
+                        {runResult.success ? 'All Test Cases Passed' : `${runResult?.errorMessage}`}
                       </span>
                     </div>
                     
