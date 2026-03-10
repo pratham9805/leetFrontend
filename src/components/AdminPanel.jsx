@@ -32,7 +32,7 @@ const problemSchema = z.object({
   startcode: z
     .array(
       z.object({
-        language: z.enum(["C++", "Java", "JavaScript"]),
+        language: z.enum(["c++", "java", "javascript"]),
         initialcode: z.string().min(1, "Initial code is required"),
       }),
     )
@@ -40,7 +40,7 @@ const problemSchema = z.object({
   referencesolution: z
     .array(
       z.object({
-        language: z.enum(["C++", "Java", "JavaScript"]),
+        language: z.enum(["c++", "java", "javascript"]),
         completecode: z.string().min(1, "Complete code is required"),
       }),
     )
@@ -59,14 +59,14 @@ function ProblemCreateForm() {
     resolver: zodResolver(problemSchema),
     defaultValues: {
       startcode: [
-        { language: "C++", initialcode: "" },
-        { language: "Java", initialcode: "" },
-        { language: "JavaScript", initialcode: "" },
+        { language: "c++", initialcode: "" },
+        { language: "java", initialcode: "" },
+        { language: "javascript", initialcode: "" },
       ],
       referencesolution: [
-        { language: "C++", completecode: "" },
-        { language: "Java", completecode: "" },
-        { language: "JavaScript", completecode: "" },
+        { language: "c++", completecode: "" },
+        { language: "java", completecode: "" },
+        { language: "javascript", completecode: "" },
       ],
     },
   });
@@ -426,7 +426,7 @@ function ProblemCreateForm() {
             <div className="space-y-8">
               {[0, 1, 2].map((index) => {
                 const lang =
-                  index === 0 ? "C++" : index === 1 ? "Java" : "JavaScript";
+                  index === 0 ? "c++" : index === 1 ? "java" : "javascript";
                 const langColor =
                   index === 0
                     ? "text-blue-400"

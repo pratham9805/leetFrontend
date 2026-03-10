@@ -459,7 +459,7 @@ setCodeByLanguage(codes);
                     <div className="flex items-center gap-3 pb-3 border-b border-white/5">
                       {runResult.success ? <CheckCircle2 className="text-emerald-400" /> : <div className="text-red-400 text-xl">✕</div>}
                       <span className={`font-semibold text-lg ${runResult.success ? 'text-emerald-400' : 'text-red-400'}`}>
-                        {runResult.success ? 'All Test Cases Passed' : `${runResult?.errorMessage}`}
+                        {runResult.success ? 'All Test Cases Passed' : `${runResult?.errormessage}`}
                       </span>
                     </div>
                     

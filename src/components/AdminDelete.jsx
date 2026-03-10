@@ -1,35 +1,26 @@
 import { useEffect, useState } from 'react';
 import axiosClient from '../utils/axiosClient'
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteProblem } from '../problemSlice';
 
 const AdminDelete = () => {
-  const [problems, setProblems] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const {problems}=useSelector(state=>state.problem)
+
   const [error, setError] = useState(null);
 
 
-  useEffect(() => {
-    fetchProblems();
-  }, []);
+const dispatch =useDispatch()
 
-  const fetchProblems = async () => {
-    try {
-      setLoading(true);
-      const { data } = await axiosClient.get('/problem/getAllProblem');
-      setProblems(data);
-    } catch (err) {
-      setError('Failed to fetch problems');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  console.log(problems)
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this problem?')) return;
     
     try {
       await axiosClient.delete(`/problem/delete/${id}`);
-      setProblems(problems.filter(problem => problem._id !== id));
+   
+        dispatch(deleteProblem(id))
+
+      
     } catch (err) {
       setError('Failed to delete problem');
       console.error(err);
@@ -37,13 +28,7 @@ const AdminDelete = () => {
   };
 
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <span className="loading loading-spinner loading-lg"></span>
-      </div>
-    );
-  }
+
 
   if (error) {
     return (
@@ -76,7 +61,7 @@ const AdminDelete = () => {
             </tr>
           </thead>
           <tbody>
-            {problems.map((problem, index) => (
+            {problems?.map((problem, index) => (
               <tr key={problem._id}>
                 <th>{index + 1}</th>
                 <td>{problem.title}</td>
