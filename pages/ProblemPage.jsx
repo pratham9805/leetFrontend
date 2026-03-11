@@ -28,6 +28,7 @@ const ProblemPage = () => {
   java: '',
   cpp: ''
 });
+
   const [loading, setLoading] = useState(false);
   const [runResult, setRunResult] = useState(null);
   const [submitResult, setSubmitResult] = useState(null);
@@ -49,6 +50,7 @@ const ProblemPage = () => {
   java: '',
   cpp: ''
 };
+
 
 //for INITIAL CODE OF ALL LANGUAGES
 response.data.startcode.forEach(sc => {
@@ -98,7 +100,9 @@ setCodeByLanguage(codes);
         language: selectedLanguage
       });
 
+      console.log(response.data)
       setRunResult(response.data);
+      console.log(runResult)
       setLoading(false);
       setActiveRightTab('testcase');
     } catch (error) {
@@ -479,7 +483,7 @@ setCodeByLanguage(codes);
                     </div>
 
                     <div className="space-y-3 mt-4">
-                      {(runResult.testcases || []).map((tc, i) => (
+                      {(runResult?.testcases || []).map((tc, i) => (
                         <div key={i} className="group p-4 bg-black/40 border border-white/5 rounded-lg text-xs font-mono space-y-3 hover:border-white/20 transition-colors">
                             <div className="flex justify-between items-center border-b border-white/5 pb-2">
                                 <span className="text-zinc-500">Case {i + 1}</span>
