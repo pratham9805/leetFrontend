@@ -11,8 +11,10 @@ import AdminDelete from "./components/AdminDelete";
 import Admin from "../pages/Admin";
 import ProblemPage from "../pages/ProblemPage";
 import UpdateProblemPage from "./components/UpdateProblem";
-
 import ProblemUpdate from "./components/ProblemUpdate";
+import AdminVideo from "./components/AdminVideo";
+import AdminUpload from "./components/AdminUpload";
+
 function App() {
   const { isAuthenticated, loading, user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -42,6 +44,9 @@ function App() {
         <Route path="/admin/update/:id" element={isAuthenticated&& user?.role === "admin" ? <ProblemUpdate/>:<Navigate to="/"></Navigate>}/>
         <Route path="/admin/delete" element={isAuthenticated && user?.role === "admin" ? <AdminDelete /> : <Navigate to="/" />} />
         <Route path="/problem/:problemId" element={<ProblemPage />} />
+          <Route path="/admin/video" element={isAuthenticated && user?.role === "admin" ? <AdminVideo/> : <Navigate to="/" />} />
+          <Route path="/admin/upload/:problemId" element={isAuthenticated&&user?.role ==='admin'?<AdminUpload/> :<Navigate to="/" />} />
+  
       </Routes>
     </>
   );

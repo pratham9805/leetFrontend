@@ -5,6 +5,7 @@ import { useParams } from 'react-router';
 import axiosClient from "../src/utils/axiosClient";
 import SubmissionHistory from '../src/components/SubmissionHistory';
 import ChatAI from '../src/components/ChatAI';
+import Editorial from '../src/components/Editorial';
 import { 
   FileText, 
   PenTool, 
@@ -27,8 +28,7 @@ const ProblemPage = () => {
   javascript: '',
   java: '',
   cpp: ''
-});
-
+})
   const [loading, setLoading] = useState(false);
   const [runResult, setRunResult] = useState(null);
   const [submitResult, setSubmitResult] = useState(null);
@@ -323,7 +323,9 @@ setCodeByLanguage(codes);
                 {activeLeftTab === 'editorial' && (
                    <div className="space-y-4 animate-in fade-in duration-500">
                     <h3 className="text-lg font-semibold text-white flex items-center gap-2"><PenTool className="text-fuchsia-400" size={18}/> Editorial</h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed p-4 bg-white/5 rounded-xl border border-white/5">Editorial is here for the problem</p>
+                    <div className="text-zinc-400 text-sm leading-relaxed p-4 bg-white/5 rounded-xl border border-white/5">
+                        <Editorial secureUrl={problem.secureUrl} thumbnailUrl={problem.thumbnailUrl} duration={problem.duration}/>
+                    </div>
                   </div>
                 )}
 
