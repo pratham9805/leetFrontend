@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash2, Home, RefreshCw, Zap, Video } from 'lucide-react';
+import { Plus, Edit, Trash2, Home, RefreshCw, Zap, Video, Trophy } from 'lucide-react';
 import { NavLink } from 'react-router';
 
 function Admin() {
@@ -40,8 +40,17 @@ function Admin() {
       color: 'btn-success',
       bgColor: 'bg-success/10',
       route: '/admin/video'
+    },{
+      id: 'contest',
+      title: 'Create Contest',
+      description: 'Set up a timed programming contest for users',
+      icon: Trophy,
+      color: 'btn-primary',
+      bgColor: 'bg-primary/10',
+      route: '/admin/contest/create'
     }
   ];
+
 
   return (
     <div className="min-h-screen bg-base-200">

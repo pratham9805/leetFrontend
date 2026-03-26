@@ -3,7 +3,7 @@
     import axiosClient from "../utils/axiosClient";
     import { Send } from "lucide-react";
     import MarkdownRenderer from "./MarkdownRenderer";
-    function ChatAi({ problem }) {
+    function ChatAi({ problem, contestId }) {
 
         const [messages, setMessages] = useState([
             { role: "model", parts: [{ text: "Hi, how can I help?" }] }
@@ -37,7 +37,8 @@
                     title: problem.title,
                     description: problem.description,
                     testcases: problem.visibletestcases,
-                    startcode: problem.startcode
+                    startcode: problem.startcode,
+                    ...(contestId ? { contestId } : {})
                 });
 
                 const aiReply = response?.data?.message || "No response from AI";

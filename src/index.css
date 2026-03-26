@@ -267,3 +267,8 @@ html {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+/* ===== Custom Slim Scrollbar (for panels) =====*/
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: oklch(0.4 0.08 265 / 0.4); border-radius: 999px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: oklch(0.55 0.15 265 / 0.7); }

@@ -146,6 +146,15 @@ const { problems } = useSelector((state) => state.problem);
         </div>
 
         <div className="flex-none flex items-center gap-3">
+          {/* Contests Link */}
+          <NavLink
+            to="/contests"
+            className="btn btn-ghost btn-sm gap-2 rounded-xl font-semibold text-base-content/70 hover:text-primary hover:bg-primary/10 transition-all duration-200"
+          >
+            <Trophy className="w-4 h-4" />
+            <span className="hidden sm:inline">Contests</span>
+          </NavLink>
+
           {/* Theme Toggle */}
           <motion.button
             whileTap={{ scale: 0.9, rotate: 180 }}
@@ -224,7 +233,7 @@ const { problems } = useSelector((state) => state.problem);
                   </div>
                   <div className="min-w-0">
                     <h2 className="text-lg font-black text-base-content leading-tight">{user?.firstName || "Coder"}</h2>
-                    <p className="text-xs text-base-content/45 mt-0.5 truncate">{user?.email || "developer@leetcode.com"}</p>
+                    <p className="text-xs text-base-content/45 mt-0.5 truncate">{user?.emailId || "developer@leetcode.com"}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">

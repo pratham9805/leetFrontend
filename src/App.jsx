@@ -14,6 +14,10 @@ import UpdateProblemPage from "./components/UpdateProblem";
 import ProblemUpdate from "./components/ProblemUpdate";
 import AdminVideo from "./components/AdminVideo";
 import AdminUpload from "./components/AdminUpload";
+import ContestListPage from "../pages/ContestListPage";
+import ContestDetailPage from "../pages/ContestDetailPage";
+import ContestLeaderboardPage from "../pages/ContestLeaderboardPage";
+import AdminCreateContest from "./components/AdminCreateContest";
 
 function App() {
   const { isAuthenticated, loading, user } = useSelector((state) => state.auth);
@@ -46,7 +50,12 @@ function App() {
         <Route path="/problem/:problemId" element={<ProblemPage />} />
           <Route path="/admin/video" element={isAuthenticated && user?.role === "admin" ? <AdminVideo/> : <Navigate to="/" />} />
           <Route path="/admin/upload/:problemId" element={isAuthenticated&&user?.role ==='admin'?<AdminUpload/> :<Navigate to="/" />} />
-  
+
+        {/* Contest Routes */}
+        <Route path="/contests" element={isAuthenticated ? <ContestListPage /> : <Navigate to="/login" />} />
+        <Route path="/contest/:id" element={isAuthenticated ? <ContestDetailPage /> : <Navigate to="/login" />} />
+        <Route path="/contest/:id/leaderboard" element={isAuthenticated ? <ContestLeaderboardPage /> : <Navigate to="/login" />} />
+        <Route path="/admin/contest/create" element={isAuthenticated && user?.role === "admin" ? <AdminCreateContest /> : <Navigate to="/" />} />
       </Routes>
     </>
   );
