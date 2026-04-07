@@ -34,7 +34,7 @@ function Admin() {
       route: '/admin/delete'
     },{
       id: 'Video',
-      title: 'Video Problem',
+      title: 'Video Upload',
       description: 'Update And Delete Video',
       icon: Video,
       color: 'btn-success',

@@ -3,7 +3,7 @@ import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-mo
 import {
   Users, X, Copy, Check, ArrowRight, Loader2,
   Sparkles, Link2, Hash, Wifi, WifiOff, LogOut,
-  Shield, Zap, Activity, Radio
+  Shield, Zap, Activity, Radio, AlertTriangle
 } from 'lucide-react';
 
 /* ─────────────────────────────────────────
@@ -359,12 +359,22 @@ const SyncTicker = () => (
 const CollaborateModal = ({
   isOpen, onClose, onCreateRoom, onJoinRoom, onLeaveRoom,
   roomId, connectedUsers, mySocketId, myUsername, isInRoom, isConnecting,
+  roomError, clearRoomError,
 }) => {
   const [view, setView]           = useState('home');
   const [joinInput, setJoinInput] = useState('');
   const [joinError, setJoinError] = useState('');
   const [confirmLeave, setConfirmLeave] = useState(false);
   const inputRef = useRef(null);
+
+  // When the backend sends a room-error, snap back to the right view
+  useEffect(() => {
+    if (!roomError) return;
+    // If we were optimistically in-room, go back to home so they can retry
+    setView('home');
+    setJoinInput('');
+    setConfirmLeave(false);
+  }, [roomError]);
 
   const handleCreate = () => {
     const id = generateRoomId();
@@ -386,6 +396,7 @@ const CollaborateModal = ({
     setJoinInput('');
     setJoinError('');
     setConfirmLeave(false);
+    clearRoomError?.();
     onClose();
   };
 
@@ -480,6 +491,38 @@ const CollaborateModal = ({
 
               {/* ── CONTENT ── */}
               <div className="relative p-6">
+
+                {/* ── Socket error banner ── */}
+                <AnimatePresence>
+                  {roomError && (
+                    <motion.div
+                      key="room-error"
+                      initial={{ opacity: 0, y: -8, height: 0 }}
+                      animate={{ opacity: 1, y: 0, height: 'auto' }}
+                      exit={{ opacity: 0, y: -8, height: 0 }}
+                      transition={{ duration: 0.25 }}
+                      className="mb-4 overflow-hidden"
+                    >
+                      <div className="flex items-start gap-3 px-4 py-3 rounded-2xl
+                                      bg-rose-500/10 border border-rose-500/30
+                                      shadow-[0_0_20px_rgba(244,63,94,0.12)]">
+                        <AlertTriangle size={14} className="text-rose-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[12px] font-black text-rose-300 leading-snug">
+                            {roomError}
+                          </p>
+                        </div>
+                        <button
+                          onClick={clearRoomError}
+                          className="text-rose-400/50 hover:text-rose-300 transition-colors"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 <AnimatePresence mode="wait">
 
                   {/* ══ HOME VIEW ══ */}

@@ -111,6 +111,39 @@ const DifficultyBadge = ({ difficulty }) => {
 };
 
 /* ════════════════════════════════════════════
+   SOLUTION CARD  (copy-enabled)
+════════════════════════════════════════════ */
+const SolutionCard = ({ sol, index }) => {
+  const { copied, copy } = useCopy();
+  return (
+    <div className="rounded-xl overflow-hidden border border-white/8 bg-black/20 group hover:border-white/14 transition-colors duration-300">
+      {/* shimmer */}
+      <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-amber-500/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="px-4 py-2.5 border-b border-white/6 bg-white/[0.03] flex justify-between items-center gap-3">
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-[11px] font-black text-amber-400 px-2 py-0.5 rounded bg-amber-500/12 border border-amber-500/20">
+            {sol?.language}
+          </span>
+          <span className="text-[10px] text-white/20 uppercase tracking-widest">Reference</span>
+        </div>
+        <button
+          onClick={() => copy(sol?.completecode || '')}
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all duration-200
+                     text-white/30 hover:text-amber-400 hover:bg-amber-500/10 border border-transparent hover:border-amber-500/20"
+          title="Copy code"
+        >
+          {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+          <span className={copied ? 'text-emerald-400' : ''}>{copied ? 'Copied!' : 'Copy'}</span>
+        </button>
+      </div>
+      <pre className="p-4 text-xs text-white/65 font-mono overflow-x-auto custom-scrollbar leading-6 select-text">
+        <code>{sol?.completecode}</code>
+      </pre>
+    </div>
+  );
+};
+
+/* ════════════════════════════════════════════
    EXAMPLE CARD
 ════════════════════════════════════════════ */
 const ExampleCard = ({ example, index }) => {
@@ -289,7 +322,9 @@ const ProblemPage = () => {
   const [problem, setProblem]             = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState('javascript');
   const [codeByLanguage, setCodeByLanguage]     = useState({ javascript: '', java: '', cpp: '' });
-  const [loading, setLoading]             = useState(false);
+  const [pageLoading, setPageLoading]     = useState(false);
+  const [runLoading, setRunLoading]       = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
   const [runResult, setRunResult]         = useState(null);
   const [submitResult, setSubmitResult]   = useState(null);
   const [activeLeftTab, setActiveLeftTab] = useState('description');
@@ -310,7 +345,7 @@ const ProblemPage = () => {
 
   useEffect(() => {
     (async () => {
-      setLoading(true);
+      setPageLoading(true);
       try {
         const res = await axiosClient.get(`/problem/problemById/${problemId}`);
         const codes = { javascript: '', java: '', cpp: '' };
@@ -322,7 +357,7 @@ const ProblemPage = () => {
         setCodeByLanguage(codes);
         setProblem(res.data);
       } catch (e) { console.error(e); }
-      setLoading(false);
+      setPageLoading(false);
     })();
   }, [problemId]);
 
@@ -335,6 +370,7 @@ const ProblemPage = () => {
     onRemoteLanguageChange: useCallback((lang) => {
       setSelectedLanguage(lang);
     }, []),
+    problemId, // ← bind room to this specific problem
   });
 
   const handleEditorChange = (v) => {
@@ -345,27 +381,27 @@ const ProblemPage = () => {
   const handleEditorDidMount = (e) => { editorRef.current = e; };
 
   const handleRun = async () => {
-    setLoading(true); setRunResult(null); setConsoleOpen(true); setActiveBottomTab('testcase');
+    setRunLoading(true); setRunResult(null); setConsoleOpen(true); setActiveBottomTab('testcase');
     try {
       const r = await axiosClient.post(`/submission/run/${problemId}`, { code: codeByLanguage[selectedLanguage], language: selectedLanguage });
       setRunResult(r.data);
     } catch { setRunResult({ success: false, error: 'Internal server error' }); }
-    setLoading(false);
+    setRunLoading(false);
   };
 
   const handleSubmitCode = async () => {
-    setLoading(true); setSubmitResult(null); setConsoleOpen(true); setActiveBottomTab('result');
+    setSubmitLoading(true); setSubmitResult(null); setConsoleOpen(true); setActiveBottomTab('result');
     try {
       const r = await axiosClient.post(`/submission/submit/${problemId}`, { code: codeByLanguage[selectedLanguage], language: selectedLanguage });
       setSubmitResult(r.data);
     } catch { setSubmitResult(null); }
-    setLoading(false);
+    setSubmitLoading(false);
   };
 
   const monacoLang = { javascript: 'javascript', java: 'java', cpp: 'cpp' };
 
   /* ─── Loading screen ─── */
-  if (loading && !problem) {
+  if (pageLoading && !problem) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-[#0d1117]">
         <div className="absolute -top-40 right-0 w-[500px] h-[500px] bg-gradient-to-bl from-violet-600/12 to-indigo-600/8 rounded-full blur-[140px] animate-float" />
@@ -480,27 +516,37 @@ const ProblemPage = () => {
         <div className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
           {/* Run */}
           <motion.button
-            whileHover={{y:-1,scale:1.03}} whileTap={{scale:0.96}}
-            onClick={handleRun} disabled={loading}
+            whileHover={!runLoading && !submitLoading ? {y:-1,scale:1.03} : {}}
+            whileTap={!runLoading && !submitLoading ? {scale:0.96} : {}}
+            onClick={handleRun}
+            disabled={runLoading || submitLoading}
             className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-[12px] font-bold transition-all duration-250 ${
-              loading ? 'bg-white/6 text-white/25 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-cyan-500 to-teal-500 text-white shadow-md shadow-cyan-500/25 hover:shadow-cyan-500/45'
+              runLoading
+                ? 'bg-cyan-500/20 text-cyan-300 cursor-not-allowed'
+                : submitLoading
+                  ? 'bg-white/6 text-white/25 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-cyan-500 to-teal-500 text-white shadow-md shadow-cyan-500/25 hover:shadow-cyan-500/45'
             }`}
           >
-            {loading ? <Loader2 size={13} className="animate-spin" /> : <Play size={13} className="fill-current" />}
+            {runLoading ? <Loader2 size={13} className="animate-spin" /> : <Play size={13} className="fill-current" />}
             Run
           </motion.button>
 
           {/* Submit */}
           <motion.button
-            whileHover={{y:-1,scale:1.03}} whileTap={{scale:0.96}}
-            onClick={handleSubmitCode} disabled={loading}
+            whileHover={!runLoading && !submitLoading ? {y:-1,scale:1.03} : {}}
+            whileTap={!runLoading && !submitLoading ? {scale:0.96} : {}}
+            onClick={handleSubmitCode}
+            disabled={runLoading || submitLoading}
             className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-[12px] font-bold transition-all duration-250 ${
-              loading ? 'bg-white/6 text-white/25 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-violet-600 to-pink-600 text-white shadow-md shadow-violet-500/25 hover:shadow-pink-500/40'
+              submitLoading
+                ? 'bg-violet-500/20 text-violet-300 cursor-not-allowed'
+                : runLoading
+                  ? 'bg-white/6 text-white/25 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-violet-600 to-pink-600 text-white shadow-md shadow-violet-500/25 hover:shadow-pink-500/40'
             }`}
           >
-            {loading ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />}
+            {submitLoading ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />}
             Submit
           </motion.button>
         </div>
@@ -657,16 +703,9 @@ const ProblemPage = () => {
                 <motion.div key="editorial"
                   initial={{opacity:0,y:8}} animate={{opacity:1,y:0}}
                   exit={{opacity:0,y:-6}} transition={{duration:0.25}}
-                  className="px-5 py-6 space-y-4"
+                  className="px-5 py-6"
                 >
-                  <div className="flex items-center gap-2">
-                    <PenTool size={13} className="text-indigo-400" />
-                    <h2 className="text-[11px] font-black text-white/35 uppercase tracking-widest">Editorial</h2>
-                    <div className="flex-1 h-px bg-gradient-to-r from-indigo-500/20 to-transparent" />
-                  </div>
-                  <div className="rounded-2xl overflow-hidden border border-white/8 bg-black/20">
-                    <Editorial secureUrl={problem.secureUrl} thumbnailUrl={problem.thumbnailUrl} duration={problem.duration} />
-                  </div>
+                  <Editorial secureUrl={problem.secureUrl} thumbnailUrl={problem.thumbnailUrl} duration={problem.duration} />
                 </motion.div>
               )}
 
@@ -685,13 +724,7 @@ const ProblemPage = () => {
                   {problem?.referencesolution?.length > 0 ? (
                     <div className="space-y-4">
                       {problem.referencesolution.map((sol, i) => (
-                        <div key={i} className="rounded-xl overflow-hidden border border-white/8 bg-black/20">
-                          <div className="px-4 py-2.5 border-b border-white/6 bg-white/3 flex justify-between items-center">
-                            <span className="font-mono text-[11px] font-black text-amber-400 px-2 py-0.5 rounded bg-amber-500/12 border border-amber-500/20">{sol?.language}</span>
-                            <span className="text-[10px] text-white/20 uppercase tracking-widest">Reference</span>
-                          </div>
-                          <pre className="p-4 text-xs text-white/65 font-mono overflow-x-auto custom-scrollbar leading-6"><code>{sol?.completecode}</code></pre>
-                        </div>
+                        <SolutionCard key={i} sol={sol} index={i} />
                       ))}
                     </div>
                   ) : (
@@ -1046,20 +1079,22 @@ const ProblemPage = () => {
       </div>
     </div>
 
-    {/* ── COLLABORATION MODAL ── */}
-    <CollaborateModal
-      isOpen={collab.isModalOpen}
-      onClose={collab.closeModal}
-      onCreateRoom={collab.handleCreateRoom}
-      onJoinRoom={collab.handleJoinRoom}
-      onLeaveRoom={collab.leaveRoom}
-      roomId={collab.roomId}
-      connectedUsers={collab.connectedUsers}
-      mySocketId={collab.mySocketId}
-      myUsername={collab.myUsername}
-      isInRoom={collab.isInRoom}
-      isConnecting={collab.isConnecting}
-    />
+      {/* ── COLLABORATION MODAL ── */}
+      <CollaborateModal
+        isOpen={collab.isModalOpen}
+        onClose={collab.closeModal}
+        onCreateRoom={collab.handleCreateRoom}
+        onJoinRoom={collab.handleJoinRoom}
+        onLeaveRoom={collab.leaveRoom}
+        roomId={collab.roomId}
+        connectedUsers={collab.connectedUsers}
+        mySocketId={collab.mySocketId}
+        myUsername={collab.myUsername}
+        isInRoom={collab.isInRoom}
+        isConnecting={collab.isConnecting}
+        roomError={collab.roomError}
+        clearRoomError={collab.clearRoomError}
+      />
 
     {/* ── JOIN / LEAVE TOASTS ── */}
     <CollabToast toasts={collab.toasts} />

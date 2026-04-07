@@ -32,7 +32,6 @@ const { problems } = useSelector((state) => state.problem);
     dispatch(setProblems(data));
 
   } catch (error) {
-
     console.error("Error fetching problems:", error);
 
   }
@@ -141,7 +140,7 @@ const { problems } = useSelector((state) => state.problem);
               <Code2 className="w-7 h-7 text-primary group-hover:rotate-12 transition-transform duration-300" />
               <div className="absolute -inset-1 bg-primary/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
-            <span className="gradient-text">LeetCode</span>
+            <span className="gradient-text">CodeShastra</span>
           </NavLink>
         </div>
 
