@@ -180,8 +180,12 @@ const { problems } = useSelector((state) => state.problem);
           <div className="dropdown dropdown-end">
             <div tabIndex={0} className="btn btn-ghost gap-2 group">
               <div className="avatar placeholder">
-                <div className="bg-gradient-to-br from-primary to-secondary text-primary-content w-9 h-9 rounded-full flex items-center justify-center shadow-lg shadow-primary/20 group-hover:shadow-primary/40 transition-shadow duration-300">
-                  <User className="w-4 h-4" />
+                <div className="bg-gradient-to-br from-primary to-secondary text-primary-content w-9 h-9 rounded-full flex items-center justify-center shadow-lg shadow-primary/20 group-hover:shadow-primary/40 transition-shadow duration-300 overflow-hidden">
+                  {user?.profilePic ? (
+                    <img src={user.profilePic} alt="avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="w-4 h-4" />
+                  )}
                 </div>
               </div>
               <span className="hidden sm:inline font-semibold text-base-content/80">
@@ -190,6 +194,12 @@ const { problems } = useSelector((state) => state.problem);
             </div>
 
             <ul className="dropdown-content menu glass-card-strong rounded-2xl w-56 shadow-2xl border border-base-content/5 mt-3 p-2 z-50">
+              <li>
+                <NavLink to="/profile" className="gap-3 rounded-xl hover:bg-primary/10 hover:text-primary transition-colors duration-200">
+                  <User className="w-4 h-4" />
+                  Your Profile
+                </NavLink>
+              </li>
               <li>
                 <button onClick={handleLogout} className="gap-3 rounded-xl hover:bg-error/10 hover:text-error transition-colors duration-200">
                   <LogOut className="w-4 h-4" />
@@ -221,17 +231,21 @@ const { problems } = useSelector((state) => state.problem);
             className="hidden lg:flex flex-col gap-5 w-72 flex-shrink-0"
           >
             {/* Profile Card */}
-            <div className="card glass-card card-glow rounded-2xl overflow-hidden">
+            <NavLink to="/profile" className="card glass-card card-glow rounded-2xl overflow-hidden hover:scale-[1.02] transition-transform shadow-lg shadow-black/20 group">
               <div className="px-5 pt-5 pb-5">
                 <div className="flex items-center gap-4 mb-4">
                   {/* Solid filled avatar — clearly visible */}
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/30 flex-shrink-0">
-                    <span className="text-xl font-black text-white select-none">
-                      {user?.firstName?.[0]?.toUpperCase() || "U"}
-                    </span>
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/30 flex-shrink-0 group-hover:shadow-primary/50 transition-shadow overflow-hidden">
+                    {user?.profilePic ? (
+                      <img src={user.profilePic} alt="avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-xl font-black text-white select-none">
+                        {user?.firstName?.[0]?.toUpperCase() || "U"}
+                      </span>
+                    )}
                   </div>
                   <div className="min-w-0">
-                    <h2 className="text-lg font-black text-base-content leading-tight">{user?.firstName || "Coder"}</h2>
+                    <h2 className="text-lg font-black text-base-content leading-tight group-hover:text-primary transition-colors">{user?.firstName || "Coder"}</h2>
                     <p className="text-xs text-base-content/45 mt-0.5 truncate">{user?.emailId || "developer@leetcode.com"}</p>
                   </div>
                 </div>
@@ -242,7 +256,7 @@ const { problems } = useSelector((state) => state.problem);
                   </div>
                 </div>
               </div>
-            </div>
+            </NavLink>
 
             {/* Progress Card */}
             <div className="card glass-card card-glow rounded-2xl p-5">

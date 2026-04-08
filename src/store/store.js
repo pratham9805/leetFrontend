@@ -2,10 +2,13 @@ import {configureStore} from '@reduxjs/toolkit'
 import authReducer from '../authSlice'
 import problemReducer from "../problemSlice"
 import themeReducer from "../themeSlice"
+import profileReducer from "../profileSlice"
+
 export const store = configureStore({
     reducer:{
         auth:authReducer,
          problem: problemReducer  ,
-         theme:themeReducer 
+         theme:themeReducer,
+         profile: profileReducer
     }
 })

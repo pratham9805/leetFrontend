@@ -8,6 +8,7 @@ import {
   Cpu, Database, Globe, ChevronRight, Sparkles, Medal,
   LineChart, ClipboardList, MessageSquare, Timer
 } from "lucide-react";
+import OwnerSection from "../src/components/OwnerSection";
 
 /* ── Animated section wrapper ── */
 function FadeIn({ children, delay = 0, direction = "up", className = "" }) {
@@ -417,6 +418,11 @@ export default function LandingPage() {
           </div>
         </FadeIn>
       </section>
+
+      {/* ════════════════════════════════
+                  OWNER SECTION
+         ════════════════════════════════ */}
+      <OwnerSection />
 
       {/* ════════════════════════════════
                     FOOTER

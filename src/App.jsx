@@ -1,8 +1,13 @@
 import { Route, Routes, Navigate } from "react-router";
 import Homepage from "../pages/Homepage";
 import LandingPage from "../pages/LandingPage";
+import ProfilePage from "../pages/ProfilePage";
 import Signup from "../pages/Signup";
 import Login from "../pages/Login";
+import VerifyOtp from "../pages/VerifyOtp";
+import ForgotPassword from "../pages/ForgotPassword";
+import VerifyResetOtp from "../pages/VerifyResetOtp";
+import ResetPassword from "../pages/ResetPassword";
 import { checkAuth } from "./authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
@@ -40,8 +45,13 @@ function App() {
       <Routes>
         {/* "/" shows Landing for guests, Homepage for logged-in users */}
         <Route path="/" element={isAuthenticated ? <Homepage /> : <LandingPage />} />
+        <Route path="/profile" element={isAuthenticated ? <ProfilePage /> : <Navigate to="/" />} />
         <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
         <Route path="/signup" element={isAuthenticated ? <Navigate to="/" /> : <Signup />} />
+        <Route path="/verify-otp" element={isAuthenticated ? <Navigate to="/" /> : <VerifyOtp />} />
+        <Route path="/forgot-password" element={isAuthenticated ? <Navigate to="/" /> : <ForgotPassword />} />
+        <Route path="/verify-reset-otp" element={isAuthenticated ? <Navigate to="/" /> : <VerifyResetOtp />} />
+        <Route path="/reset-password" element={isAuthenticated ? <Navigate to="/" /> : <ResetPassword />} />
         <Route path="/admin" element={isAuthenticated && user?.role === "admin" ? <Admin /> : <Navigate to="/" />} />
         <Route path="/admin/create" element={isAuthenticated && user?.role === "admin" ? <AdminPanel /> : <Navigate to="/" />} />
         <Route path="/admin/update" element={isAuthenticated && user?.role === "admin" ? <UpdateProblemPage /> : <Navigate to="/" />} />
