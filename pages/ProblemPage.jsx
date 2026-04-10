@@ -1,9 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import Editor from '@monaco-editor/react';
 import { useParams, useNavigate, useSearchParams } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import axiosClient from "../src/utils/axiosClient";
+import { setProblemCache, selectProblemFromCache } from '../src/problemCacheSlice';
+import { addSolvedProblem } from '../src/problemSlice';
+import toast from 'react-hot-toast';
 import SubmissionHistory from '../src/components/SubmissionHistory';
 import ChatAI from '../src/components/ChatAI';
 import Editorial from '../src/components/Editorial';
@@ -319,6 +323,8 @@ const TabBar = ({ tabs, active, setActive, layoutId, className = '' }) => (
    MAIN COMPONENT
 ════════════════════════════════════════════ */
 const ProblemPage = () => {
+  const dispatch = useDispatch();
+  const cache = useSelector(state => state.problemCache ? state.problemCache.cache : {});
   const [problem, setProblem]             = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState('javascript');
   const [codeByLanguage, setCodeByLanguage]     = useState({ javascript: '', java: '', cpp: '' });
@@ -347,19 +353,27 @@ const ProblemPage = () => {
     (async () => {
       setPageLoading(true);
       try {
-        const res = await axiosClient.get(`/problem/problemById/${problemId}`);
+        let problemData = cache[problemId];
+
+        if (!problemData) {
+          const res = await axiosClient.get(`/problem/problemById/${problemId}`);
+          problemData = res.data;
+          dispatch(setProblemCache({ id: problemId, data: problemData }));
+        }
+
         const codes = { javascript: '', java: '', cpp: '' };
-        res.data.startcode.forEach(sc => {
+        problemData.startcode.forEach(sc => {
           if (sc.language === 'javascript') codes.javascript = sc.initialcode;
           if (sc.language === 'java')       codes.java       = sc.initialcode;
           if (sc.language === 'c++')        codes.cpp        = sc.initialcode;
         });
         setCodeByLanguage(codes);
-        setProblem(res.data);
+        setProblem(problemData);
       } catch (e) { console.error(e); }
       setPageLoading(false);
     })();
-  }, [problemId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [problemId, dispatch]);
 
   /* ── Collaboration hook ── */
   const collab = useCollaboration({
@@ -382,19 +396,38 @@ const ProblemPage = () => {
 
   const handleRun = async () => {
     setRunLoading(true); setRunResult(null); setConsoleOpen(true); setActiveBottomTab('testcase');
+    const tId = toast.loading('Running against sample cases...');
     try {
       const r = await axiosClient.post(`/submission/run/${problemId}`, { code: codeByLanguage[selectedLanguage], language: selectedLanguage });
       setRunResult(r.data);
-    } catch { setRunResult({ success: false, error: 'Internal server error' }); }
+      if (r.data.success) {
+        toast.success('Run successful! Samples passed.', { id: tId });
+      } else {
+        toast.error('Run failed on some testcases.', { id: tId });
+      }
+    } catch { 
+      toast.error('Execution error occurred.', { id: tId });
+      setRunResult({ success: false, error: 'Internal server error' }); 
+    }
     setRunLoading(false);
   };
 
   const handleSubmitCode = async () => {
     setSubmitLoading(true); setSubmitResult(null); setConsoleOpen(true); setActiveBottomTab('result');
+    const tId = toast.loading('Evaluating submission...');
     try {
       const r = await axiosClient.post(`/submission/submit/${problemId}`, { code: codeByLanguage[selectedLanguage], language: selectedLanguage });
       setSubmitResult(r.data);
-    } catch { setSubmitResult(null); }
+      if (r.data.accepted && problem) {
+        toast.success(`Accepted! All test cases passed.`, { id: tId });
+        dispatch(addSolvedProblem(problem));
+      } else {
+        toast.error(`Failed: ${r.data.error || 'Wrong Answer'}`, { id: tId });
+      }
+    } catch { 
+      toast.error('Network error during submission.', { id: tId });
+      setSubmitResult(null); 
+    }
     setSubmitLoading(false);
   };
 

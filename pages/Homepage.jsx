@@ -6,14 +6,13 @@ import { Check, Code2, LogOut, Shield, User, Sun, Moon, Search, Sparkles, Trophy
 import axiosClient from "../src/utils/axiosClient";
 import { logoutUser } from "../src/authSlice";
 import { toggleTheme } from "../src/themeSlice";
-import {setProblems} from "../src/problemSlice"
+import { setProblems, setSolvedProblems, clearSolvedProblems } from "../src/problemSlice";
 
 function Homepage() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { mode } = useSelector((state) => state.theme);
-const { problems } = useSelector((state) => state.problem);
-  const [solvedProblems, setSolvedProblems] = useState([]);
+  const { problems, solvedProblems, isSolvedProblemsFetched } = useSelector((state) => state.problem);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -25,36 +24,35 @@ const { problems } = useSelector((state) => state.problem);
 
   useEffect(() => {
     const fetchProblems = async () => {
-  try {
-
-    const { data } = await axiosClient.get("/problem/getAllProblem");
-
-    dispatch(setProblems(data));
-
-  } catch (error) {
-    console.error("Error fetching problems:", error);
-
-  }
-};
-
+      try {
+        const { data } = await axiosClient.get("/problem/getAllProblem");
+        dispatch(setProblems(data));
+      } catch (error) {
+        console.error("Error fetching problems:", error);
+      }
+    };
 
     const fetchSolvedProblems = async () => {
       try {
         const { data } = await axiosClient.get("/problem/problemSolvedByUser");
-        setSolvedProblems(data);
+        dispatch(setSolvedProblems(data));
       } catch (error) {
         console.error("Error fetching solved problems:", error);
       }
     };
 
     const loadData = async () => {
-      await fetchProblems();
-      if (user) await fetchSolvedProblems();
+      if (problems.length === 0) {
+        await fetchProblems();
+      }
+      if (user && !isSolvedProblemsFetched) {
+        await fetchSolvedProblems();
+      }
       setLoading(false);
     };
 
     loadData();
-  }, [user]);
+  }, [user, problems.length, isSolvedProblemsFetched, dispatch]);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", mode === "dark" ? "leetdark" : "leetlight");
@@ -62,7 +60,7 @@ const { problems } = useSelector((state) => state.problem);
 
   const handleLogout = () => {
     dispatch(logoutUser());
-    setSolvedProblems([]);
+    dispatch(clearSolvedProblems());
   };
 
   const handleThemeToggle = () => {

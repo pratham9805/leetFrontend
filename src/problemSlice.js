@@ -4,12 +4,32 @@ const problemSlice = createSlice({
   name: "problem",
   initialState: {
     problems: [],
-    loading: false
+    loading: false,
+    solvedProblems: [],
+    isSolvedProblemsFetched: false
   },
   reducers: {
 
     setProblems: (state, action) => {
       state.problems = action.payload;
+    },
+
+    setSolvedProblems: (state, action) => {
+      state.solvedProblems = action.payload;
+      state.isSolvedProblemsFetched = true;
+    },
+
+    clearSolvedProblems: (state) => {
+      state.solvedProblems = [];
+      state.isSolvedProblemsFetched = false;
+    },
+
+    addSolvedProblem: (state, action) => {
+      // Ensure we don't add duplicates
+      const exists = state.solvedProblems.find(p => p._id === action.payload._id);
+      if (!exists) {
+        state.solvedProblems.push(action.payload);
+      }
     },
 
     addProblem: (state, action) => {
@@ -35,5 +55,5 @@ const problemSlice = createSlice({
   }
 });
 
-export const { setProblems, addProblem, deleteProblem, updateProblem } = problemSlice.actions;
+export const { setProblems, setSolvedProblems, clearSolvedProblems, addSolvedProblem, addProblem, deleteProblem, updateProblem } = problemSlice.actions;
 export default problemSlice.reducer;

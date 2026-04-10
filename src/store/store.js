@@ -3,12 +3,14 @@ import authReducer from '../authSlice'
 import problemReducer from "../problemSlice"
 import themeReducer from "../themeSlice"
 import profileReducer from "../profileSlice"
+import problemCacheReducer from "../problemCacheSlice"
 
 export const store = configureStore({
     reducer:{
         auth:authReducer,
          problem: problemReducer  ,
          theme:themeReducer,
-         profile: profileReducer
+         profile: profileReducer,
+         problemCache: problemCacheReducer
     }
 })
